@@ -14,9 +14,11 @@ namespace Ecom.infrastructure
         public static IServiceCollection infrastructureConfiguration(this IServiceCollection services)
         {
             services.AddScoped(typeof(IGenericRepositry<>), typeof(GenericRepositry<>));
-            services.AddScoped<ICategoryRepositry,CategoryRepositry>();
-            services.AddScoped<IProductRepositry,ProductRepositry>();
-            services.AddScoped<IPhotoRepositry,PhotoRepositry>();
+            //services.AddScoped<ICategoryRepositry,CategoryRepositry>();
+            //services.AddScoped<IProductRepositry,ProductRepositry>();
+            //services.AddScoped<IPhotoRepositry,PhotoRepositry>();
+
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             return services;
         }
     }
