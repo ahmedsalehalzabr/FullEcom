@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Ecom.Api.Helper;
 using Ecom.Core.Dto;
 using Ecom.Core.Entites.Product;
 using Ecom.Core.interfaces;
@@ -21,7 +22,7 @@ namespace Ecom.Api.Controllers
             {
                 var category= await work.CategoryRepositry.GetAllAsync();
                 if (category is null)
-                return BadRequest();
+                return BadRequest(new ResponseAPI(400));
                 return Ok(category);
             }
             catch (Exception ex)
@@ -37,7 +38,7 @@ namespace Ecom.Api.Controllers
             {
                 var categroy = await work.CategoryRepositry.GetByIdAsync(id);
                 if(categroy is null)
-                    return BadRequest();
+                    return BadRequest(new ResponseAPI(400,"Item Not Found"));
                 return Ok(categroy);
             }
             catch (Exception ex)
@@ -54,7 +55,7 @@ namespace Ecom.Api.Controllers
                 //Maping
                 var category = mapper.Map<Category>(categoryDto);
                 await work.CategoryRepositry.AddAsync(category);
-                return Ok(new {message="Item has been Added"});
+                return Ok(new ResponseAPI(200,"Item has been Added"));
             }
             catch (Exception ex)
             {
@@ -69,7 +70,7 @@ namespace Ecom.Api.Controllers
             {
                 var category = mapper.Map<Category>(ubdateCategoryDto);
                     await work.CategoryRepositry.UpdateAsync(category);
-                return Ok(category);
+                return Ok(new ResponseAPI(200, "Item has been updated"));
             }
             catch (Exception ex)
             {
@@ -84,7 +85,7 @@ namespace Ecom.Api.Controllers
             try
             {
                 await work.CategoryRepositry.DeleteAsync(id);
-                return Ok(new {message="item has been deleted"});
+                return Ok(new ResponseAPI(200,"item has been deleted"));
             }
             catch (Exception ex)
             {
