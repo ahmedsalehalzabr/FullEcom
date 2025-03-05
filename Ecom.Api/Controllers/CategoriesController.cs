@@ -1,4 +1,5 @@
-﻿using Ecom.Core.Dto;
+﻿using AutoMapper;
+using Ecom.Core.Dto;
 using Ecom.Core.Entites.Product;
 using Ecom.Core.interfaces;
 using Microsoft.AspNetCore.Http;
@@ -9,7 +10,7 @@ namespace Ecom.Api.Controllers
 
     public class CategoriesController : BaseController
     {
-        public CategoriesController(IUnitOfWork work) : base(work)
+        public CategoriesController(IUnitOfWork work, IMapper mapper) : base(work, mapper)
         {
         }
 
@@ -51,11 +52,7 @@ namespace Ecom.Api.Controllers
             try
             {
                 //Maping
-                var category = new Category()
-                {
-                    Name = categoryDto.Name,
-                    Description = categoryDto.Description,
-                };
+                var category = mapper.Map<Category>(categoryDto);
                 await work.CategoryRepositry.AddAsync(category);
                 return Ok(new {message="Item has been Added"});
             }
@@ -70,12 +67,7 @@ namespace Ecom.Api.Controllers
         {
             try
             {
-                var category = new Category()
-                {
-                    Name = ubdateCategoryDto.Name,
-                    Description = ubdateCategoryDto.Description,
-                    Id = ubdateCategoryDto.id,
-                };
+                var category = mapper.Map<Category>(ubdateCategoryDto);
                     await work.CategoryRepositry.UpdateAsync(category);
                 return Ok(category);
             }
