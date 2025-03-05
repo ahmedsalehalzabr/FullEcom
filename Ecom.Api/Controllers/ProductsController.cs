@@ -22,7 +22,7 @@ namespace Ecom.Api.Controllers
                 var Product = await work.ProductRepositry
                     .GetAllAsync(x => x.Category,x => x.Photos);
                 var result = mapper.Map<List<ProductDto>>(Product);
-                if (Product == null)
+                if (Product is null)
                 {
                     return BadRequest(new ResponseAPI(400));
                 }
@@ -30,7 +30,7 @@ namespace Ecom.Api.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                throw;
             }
         }
 
