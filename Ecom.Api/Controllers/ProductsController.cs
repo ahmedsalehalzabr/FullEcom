@@ -30,9 +30,28 @@ namespace Ecom.Api.Controllers
             }
             catch (Exception ex)
             {
-                throw;
+                return BadRequest(ex.Message);
             }
         }
-
+        [HttpGet("get-by-id/{id}")]
+        public async Task<IActionResult> getbyid(int id)
+        {
+            try
+            {
+                var Product = await work.ProductRepositry.GetByIdAsync(id,
+                    x => x.Category,x => x.Photos);
+                var result =  mapper.Map<ProductDto>(Product);
+                if (Product is null)
+                {
+                    return BadRequest(new ResponseAPI(400, "Item Not Found"));
+                }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        
     }
 }
