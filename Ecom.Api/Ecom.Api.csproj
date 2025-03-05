@@ -15,4 +15,8 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Ecom.infrastructure\Ecom.infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

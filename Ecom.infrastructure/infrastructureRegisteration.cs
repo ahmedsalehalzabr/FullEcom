@@ -1,5 +1,8 @@
 ﻿using Ecom.Core.interfaces;
+using Ecom.infrastructure.Data;
 using Ecom.infrastructure.Repositries;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -11,14 +14,19 @@ namespace Ecom.infrastructure
 {
     public static class infrastructureRegisteration
     {
-        public static IServiceCollection infrastructureConfiguration(this IServiceCollection services)
+        public static IServiceCollection infrastructureConfiguration(this IServiceCollection services, IConfiguration configuretion)
         {
             services.AddScoped(typeof(IGenericRepositry<>), typeof(GenericRepositry<>));
-            //services.AddScoped<ICategoryRepositry,CategoryRepositry>();
-            //services.AddScoped<IProductRepositry,ProductRepositry>();
-            //services.AddScoped<IPhotoRepositry,PhotoRepositry>();
 
+            //apply Unit of work
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            //apply DbContext
+            services.AddDbContext<AppDbContext>(op =>
+            {
+             op.UseSqlServer(configuretion.GetConnectionString("Ecom"));
+
+        });
+
             return services;
         }
     }
