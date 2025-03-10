@@ -4,6 +4,7 @@ using Ecom.Core.Entites.Product;
 using Ecom.Core.interfaces;
 using Ecom.Core.Services;
 using Ecom.infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +39,48 @@ namespace Ecom.infrastructure.Repositries
             {
                 ImageName = path,
                 ProductId = product.Id,
+            }).ToList();
+
+            await context.Photos.AddRangeAsync(photo);
+            await context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> UpdateAsync(UpdateProudactDto updateProudactDto)
+        {
+            if (updateProudactDto is null)
+            {
+                return false;
+            }
+
+            var FindProduct= await context.Products.Include(m=>m.Category)
+                .Include(m=>m.Photos)
+                .FirstOrDefaultAsync(m=>m.Id == updateProudactDto.Id);
+
+            if (FindProduct is null)
+            {
+                Console.WriteLine($"Searching for product with ID: {updateProudactDto.Id}");
+
+                
+            }
+
+            mapper.Map(updateProudactDto,FindProduct);
+
+            var FindPhoto = await context.Photos.Where(m=>m.ProductId == updateProudactDto.Id).ToListAsync();
+            
+            foreach (var item in FindPhoto)
+            {
+                imageManagementService.DeleteImageAsync(item.ImageName);
+            }
+
+            context.Photos.RemoveRange(FindPhoto);
+
+            var ImagePath = await imageManagementService.AddImageAsync(updateProudactDto.Photo, updateProudactDto.Name);
+
+            var photo = ImagePath.Select(path => new Photo
+            {
+                ImageName = path,
+                ProductId = updateProudactDto.Id,
             }).ToList();
 
             await context.Photos.AddRangeAsync(photo);

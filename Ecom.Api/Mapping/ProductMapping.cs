@@ -17,6 +17,9 @@ namespace Ecom.Api.Mapping
             CreateMap<AddProductDto,Product>()
                 .ForMember(m=>m.Photos,op=>op.Ignore())
                 .ReverseMap();
+            CreateMap<UpdateProudactDto, Product>()
+               .ForMember(m => m.Photos, op => op.Ignore())
+               .ReverseMap();
         }
     }
 }

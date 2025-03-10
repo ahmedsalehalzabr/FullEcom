@@ -2,7 +2,6 @@
 using Ecom.Api.Helper;
 using Ecom.Core.Dto;
 using Ecom.Core.interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecom.Api.Controllers
@@ -58,7 +57,7 @@ namespace Ecom.Api.Controllers
             try
             {
                 await work.ProductRepositry.AddAsync(addProductDto);
-                return Ok();
+                return Ok(new ResponseAPI(200));
             }
             catch (Exception ex)
             {
@@ -66,6 +65,18 @@ namespace Ecom.Api.Controllers
             }
         }
 
-
+        [HttpPut("Update-Product")]
+        public async Task<IActionResult> Update(UpdateProudactDto updateProudactDto)
+        {
+            try 
+            {
+                await work.ProductRepositry.UpdateAsync(updateProudactDto);
+                return Ok(new ResponseAPI(200));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseAPI(400, ex.Message));
+            }
+        }
     }
 }
