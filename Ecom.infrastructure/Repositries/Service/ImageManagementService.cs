@@ -32,7 +32,7 @@ namespace Ecom.infrastructure.Repositries.Service
                 if (item.Length > 0 )
                 {
                     var ImageName = item.FileName;
-                    var ImageSrc = $"/Images/{src}/{ImageName}";
+                    var ImageSrc = $"/Image/{src}/{ImageName}";
 
                     var root = Path.Combine(ImageDirctory, ImageName);
 

@@ -78,5 +78,42 @@ namespace Ecom.Api.Controllers
                 return BadRequest(new ResponseAPI(400, ex.Message));
             }
         }
+        [HttpDelete("Delete-Product/{Id}")]
+        public async Task<IActionResult> Delete(int Id)
+        {
+            try
+            {
+                var product = await work.ProductRepositry.GetByIdAsync(Id, x => x.Photos, x => x.Category);
+
+                await work.ProductRepositry.DeleteAsync(product);
+                return Ok(new ResponseAPI(200));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ResponseAPI(400, ex.Message));
+            }
+        }
+        //[HttpDelete("Delete-Product/{Id}")]
+        //public async Task<IActionResult> Delete(int Id)
+        //{
+        //    try
+        //    {
+        //        var product = await work.ProductRepositry.GetByIdAsync(Id, x => x.Photos, x => x.Category);
+
+        //        if (product == null)
+        //        {
+        //            return NotFound(new ResponseAPI(404, "Product not found"));
+        //        }
+
+        //        await work.ProductRepositry.DeleteAsync(product);
+        //        return Ok(new ResponseAPI(200, "Product deleted successfully"));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new ResponseAPI(400, ex.Message));
+        //    }
+        //}
+
+
     }
 }
