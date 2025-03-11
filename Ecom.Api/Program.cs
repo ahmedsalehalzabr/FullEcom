@@ -1,3 +1,4 @@
+using Ecom.Api.Middleware;
 using Ecom.infrastructure;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseMiddleware<ExceptionsMiddleware>();
+
+app.UseStatusCodePagesWithReExecute("/errors/{0}");
 
 app.UseHttpsRedirection();
 
