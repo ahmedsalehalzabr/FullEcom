@@ -10,6 +10,7 @@ namespace Ecom.Core.interfaces
 {
     public interface IProductRepositry:IGenericRepositry<Product>
     {
+        Task<IEnumerable<ProductDto>> GetAllAsync(string sort);
         Task<bool> AddAsync(AddProductDto addProductDto);
         Task<bool> UpdateAsync(UpdateProudactDto updateProudactDto);
         Task<bool> DeleteAsync(Product product);

@@ -25,6 +25,31 @@ namespace Ecom.infrastructure.Repositries
             this.imageManagementService = imageManagementService;
         }
 
+        public async Task<IEnumerable<ProductDto>> GetAllAsync(string sort)
+        {
+            var query = context.Products
+                .Include(m => m.Category)
+                .Include(m => m.Photos)
+                .AsNoTracking();
+
+            if (!string.IsNullOrEmpty(sort))
+            {
+                switch (sort)
+                {
+                    case "PricAsn":
+                        query = query.OrderBy(m => m.NewPrice);
+                        break;
+                    case "PricDes":
+                        query = query.OrderByDescending(m => m.NewPrice);
+                        break;
+                    default:
+                        query = query.OrderBy(m => m.Name);
+                        break;
+                }
+            }
+            var result = mapper.Map<List<ProductDto>>(query);
+            return result;
+        }
         public async Task<bool> AddAsync(AddProductDto addProductDto)
         {
             if (addProductDto == null) return false;
@@ -45,8 +70,6 @@ namespace Ecom.infrastructure.Repositries
             await context.SaveChangesAsync();
             return true;
         }
-
-      
 
         public async Task<bool> UpdateAsync(UpdateProudactDto updateProudactDto)
         {

@@ -2,6 +2,7 @@
 using Ecom.Api.Helper;
 using Ecom.Core.Dto;
 using Ecom.Core.interfaces;
+using Ecom.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecom.Api.Controllers
@@ -10,22 +11,20 @@ namespace Ecom.Api.Controllers
     [ApiController]
     public class ProductsController : BaseController
     {
-        public ProductsController(IUnitOfWork work, IMapper mapper) : base(work, mapper)
+        private readonly IImageManagementService service;
+        public ProductsController(IUnitOfWork work, IMapper mapper, IImageManagementService service) : base(work, mapper)
         {
+            this.service = service;
         }
         [HttpGet("get-all")]
-        public async Task<IActionResult> get()
+        public async Task<IActionResult> get(string sort)
         {
             try
             {
                 var Product = await work.ProductRepositry
-                    .GetAllAsync(x => x.Category,x => x.Photos);
-                var result = mapper.Map<List<ProductDto>>(Product);
-                if (Product is null)
-                {
-                    return BadRequest(new ResponseAPI(400));
-                }
-                return Ok(result);
+                    .GetAllAsync(sort);
+                
+                return Ok(Product);
             }
             catch (Exception ex)
             {
@@ -93,27 +92,6 @@ namespace Ecom.Api.Controllers
                 return BadRequest(new ResponseAPI(400, ex.Message));
             }
         }
-        //[HttpDelete("Delete-Product/{Id}")]
-        //public async Task<IActionResult> Delete(int Id)
-        //{
-        //    try
-        //    {
-        //        var product = await work.ProductRepositry.GetByIdAsync(Id, x => x.Photos, x => x.Category);
-
-        //        if (product == null)
-        //        {
-        //            return NotFound(new ResponseAPI(404, "Product not found"));
-        //        }
-
-        //        await work.ProductRepositry.DeleteAsync(product);
-        //        return Ok(new ResponseAPI(200, "Product deleted successfully"));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(new ResponseAPI(400, ex.Message));
-        //    }
-        //}
-
 
     }
 }
