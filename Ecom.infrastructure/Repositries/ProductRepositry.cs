@@ -5,13 +5,8 @@ using Ecom.Core.interfaces;
 using Ecom.Core.Services;
 using Ecom.infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Ecom.infrastructure.Repositries
+ 
+namespace Ecom.infrastructure.Repositries 
 {
     public class ProductRepositry : GenericRepositry<Product>, IProductRepositry
     {
@@ -25,7 +20,7 @@ namespace Ecom.infrastructure.Repositries
             this.imageManagementService = imageManagementService;
         }
 
-        public async Task<IEnumerable<ProductDto>> GetAllAsync(string sort, int? CategoryId)
+        public async Task<IEnumerable<ProductDto>> GetAllAsync(string sort, int? CategoryId, int pageSize, int PageNumber)
         {
             var query = context.Products
                 .Include(m => m.Category)
@@ -38,19 +33,19 @@ namespace Ecom.infrastructure.Repositries
 
             if (!string.IsNullOrEmpty(sort))
             {
-                switch (sort)
+                query = sort switch
                 {
-                    case "PricAsn":
-                        query = query.OrderBy(m => m.NewPrice);
-                        break;
-                    case "PricDes":
-                        query = query.OrderByDescending(m => m.NewPrice);
-                        break;
-                    default:
-                        query = query.OrderBy(m => m.Name);
-                        break;
-                }
+                    "PricAcn" => query.OrderBy(m => m.NewPrice),
+                    "PricDce" => query.OrderByDescending(m => m.NewPrice),
+                    _ => query.OrderBy(m => m.Name),
+                };
             }
+
+            PageNumber = PageNumber > 0 ? PageNumber : 1;
+            pageSize = pageSize > 0 ? pageSize : 3;
+
+            query = query.Skip((pageSize)*(PageNumber - 1)).Take(pageSize);
+
             var result = mapper.Map<List<ProductDto>>(query);
             return result;
         }
@@ -129,5 +124,6 @@ namespace Ecom.infrastructure.Repositries
             await context.SaveChangesAsync();
             return true;
         }
+
     }
 }
