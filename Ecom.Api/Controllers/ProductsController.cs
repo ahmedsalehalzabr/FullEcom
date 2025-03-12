@@ -3,6 +3,7 @@ using Ecom.Api.Helper;
 using Ecom.Core.Dto;
 using Ecom.Core.interfaces;
 using Ecom.Core.Services;
+using Ecom.Core.Sharing;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecom.Api.Controllers
@@ -17,12 +18,12 @@ namespace Ecom.Api.Controllers
             this.service = service;
         }
         [HttpGet("get-all")]
-        public async Task<IActionResult> get(string? sort ,int? CategoryId,int pageSize,int PageNumber)
+        public async Task<IActionResult> get([FromQuery] ProductParams productParams)
         {
             try
             {
                 var Product = await work.ProductRepositry
-                    .GetAllAsync(sort, CategoryId, pageSize, PageNumber);
+                    .GetAllAsync(productParams);
                 
                 return Ok(Product);
             }

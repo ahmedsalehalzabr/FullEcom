@@ -3,6 +3,7 @@ using Ecom.Core.Dto;
 using Ecom.Core.Entites.Product;
 using Ecom.Core.interfaces;
 using Ecom.Core.Services;
+using Ecom.Core.Sharing;
 using Ecom.infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
  
@@ -20,20 +21,20 @@ namespace Ecom.infrastructure.Repositries
             this.imageManagementService = imageManagementService;
         }
 
-        public async Task<IEnumerable<ProductDto>> GetAllAsync(string sort, int? CategoryId, int pageSize, int PageNumber)
+        public async Task<IEnumerable<ProductDto>> GetAllAsync(ProductParams productParams)
         {
             var query = context.Products
                 .Include(m => m.Category)
                 .Include(m => m.Photos)
                 .AsNoTracking();
 
-            if (CategoryId.HasValue)
-                query = query.Where(m => m.CategoryId == CategoryId);
+            if (productParams.CategoryId.HasValue)
+                query = query.Where(m => m.CategoryId == productParams.CategoryId);
             
 
-            if (!string.IsNullOrEmpty(sort))
+            if (!string.IsNullOrEmpty(productParams.Sort))
             {
-                query = sort switch
+                query = productParams.Sort switch
                 {
                     "PricAcn" => query.OrderBy(m => m.NewPrice),
                     "PricDce" => query.OrderByDescending(m => m.NewPrice),
@@ -41,10 +42,9 @@ namespace Ecom.infrastructure.Repositries
                 };
             }
 
-            PageNumber = PageNumber > 0 ? PageNumber : 1;
-            pageSize = pageSize > 0 ? pageSize : 3;
+            
 
-            query = query.Skip((pageSize)*(PageNumber - 1)).Take(pageSize);
+            query = query.Skip((productParams.pageSize) *(productParams.PageNumber - 1)).Take(productParams.pageSize);
 
             var result = mapper.Map<List<ProductDto>>(query);
             return result;
