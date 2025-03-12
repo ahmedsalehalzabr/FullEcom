@@ -17,12 +17,12 @@ namespace Ecom.Api.Controllers
             this.service = service;
         }
         [HttpGet("get-all")]
-        public async Task<IActionResult> get(string sort)
+        public async Task<IActionResult> get(string sort,int? CategoryId)
         {
             try
             {
                 var Product = await work.ProductRepositry
-                    .GetAllAsync(sort);
+                    .GetAllAsync(sort, CategoryId);
                 
                 return Ok(Product);
             }

@@ -25,12 +25,16 @@ namespace Ecom.infrastructure.Repositries
             this.imageManagementService = imageManagementService;
         }
 
-        public async Task<IEnumerable<ProductDto>> GetAllAsync(string sort)
+        public async Task<IEnumerable<ProductDto>> GetAllAsync(string sort, int? CategoryId)
         {
             var query = context.Products
                 .Include(m => m.Category)
                 .Include(m => m.Photos)
                 .AsNoTracking();
+
+            if (CategoryId.HasValue)
+                query = query.Where(m => m.CategoryId == CategoryId);
+            
 
             if (!string.IsNullOrEmpty(sort))
             {
