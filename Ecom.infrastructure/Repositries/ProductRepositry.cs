@@ -28,6 +28,19 @@ namespace Ecom.infrastructure.Repositries
                 .Include(m => m.Photos)
                 .AsNoTracking();
 
+            //filtering by word
+            if (!string.IsNullOrEmpty(productParams.Search))
+            {
+                var searchWord = productParams.Search.Split(' ');
+                query = query.Where(m => searchWord.All(word =>
+                m.Name.ToLower().Contains(word.ToLower()) || 
+                m.Description.ToLower().Contains(word.ToLower())
+                ));
+            }
+                //query = query.Where(m => m.Name.ToLower().Contains(productParams.Search.ToLower())
+                //|| m.Description.ToLower().Contains(productParams.Search.ToLower()));
+
+            //filtering by category id
             if (productParams.CategoryId.HasValue)
                 query = query.Where(m => m.CategoryId == productParams.CategoryId);
             
