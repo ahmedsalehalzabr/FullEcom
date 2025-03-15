@@ -7,7 +7,7 @@ builder.Services.AddCors(op =>
 {
     op.AddPolicy("CORSPolicy", builder =>
     {
-        builder.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("https://localhost:4200");
+        builder.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:4200");
     });
 });
 
@@ -30,6 +30,7 @@ if (app.Environment.IsDevelopment())
 }
 app.UseCors("CORSPolicy");
 app.UseMiddleware<ExceptionsMiddleware>();
+app.UseStaticFiles();
 
 app.UseStatusCodePagesWithReExecute("/errors/{0}");
 
