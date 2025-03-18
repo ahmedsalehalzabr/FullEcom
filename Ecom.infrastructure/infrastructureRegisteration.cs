@@ -23,8 +23,10 @@ namespace Ecom.infrastructure
             services.AddSingleton<IConnectionMultiplexer>(i =>
             {
                 var config = ConfigurationOptions.Parse(configuretion.GetConnectionString("redis"));
+                config.AbortOnConnectFail = false; // إعادة المحاولة بعد الفشل الأول
                 return ConnectionMultiplexer.Connect(config);
             });
+
 
             services.AddSingleton<IImageManagementService,ImageManagementService>();
             services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")));
