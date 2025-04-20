@@ -1,6 +1,8 @@
 ﻿using Ecom.Core.Dto;
 using Ecom.Core.Entites;
 using Ecom.Core.interfaces;
+using Ecom.Core.Services;
+using Ecom.Core.Sharing;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -13,10 +15,14 @@ namespace Ecom.infrastructure.Repositries
     public class AuthRepositry:IAuth
     {
         private readonly UserManager<AppUser> userManager;
+        private readonly IEmailService emailService;
+        private readonly SignInManager<AppUser> signInManager;
 
-        public AuthRepositry(UserManager<AppUser> userManager)
+        public AuthRepositry(UserManager<AppUser> userManager, IEmailService emailService, SignInManager<AppUser> signInManager)
         {
             this.userManager = userManager;
+            this.emailService = emailService;
+            this.signInManager = signInManager;
         }
         public async Task<string> RegisterAsync(RegisterDto registerDto)
         {
@@ -42,7 +48,16 @@ namespace Ecom.infrastructure.Repositries
             {
                 return result.Errors.ToList()[0].Description;
             }
+            string code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            SendEmail(user.Email, code, "active", "ActiveEmail", "Please active your email");
             return "done";
+        }
+        public async Task SendEmail(string email, string code,string component,string subject,string messge)
+        {
+            var result = new EmailDto(
+                email, "ahmedalzabr1@gmail.com",
+                subject, EmailStringBody.send(email, code, component, messge));
+            await emailService.SendEmail(result);
         }
     }
 }
