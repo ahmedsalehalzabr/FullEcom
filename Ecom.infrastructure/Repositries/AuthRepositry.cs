@@ -92,8 +92,36 @@ namespace Ecom.infrastructure.Repositries
             var token = await userManager.GeneratePasswordResetTokenAsync(findUser);
             await SendEmail(findUser.Email, token, "Reset-Password", "Rest Password", "Click on button to Reset your password");
             return true;
+        }
+        public async Task<string> ResetPassword(RestPasswordDto restPassword)
+        {
+            var findUser = await userManager.FindByEmailAsync(restPassword.Email);
+            if (findUser is null)
+            {
+                return null;
+            }
+            var result =await userManager.ResetPasswordAsync(findUser, restPassword.Token,restPassword.Password);
+            if (result.Succeeded)
+            {
+                return "Password Change success";
+            }
+            return result.Errors.ToList()[0].Description;
+        }
+        public async Task<bool> ActiveAccount(ActiveAccountDto accountDto)
+        {
+            var findUser = await userManager.FindByEmailAsync(accountDto.Email);
+            if (findUser is null)
+            {
+                return false;
+            }
 
+            var result = await userManager.ConfirmEmailAsync(findUser, accountDto.Token);
+            if (result.Succeeded) 
+                return true;
 
+            string token = await userManager.GenerateEmailConfirmationTokenAsync(findUser);
+            await SendEmail(findUser.Email, token, "active", "ActiveEmail", "Please active your email, click on button to active");
+            return false;
         }
     }
 }
