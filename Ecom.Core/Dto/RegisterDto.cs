@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace Ecom.Core.Dto
 {
+    public record LoginDto
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+    }
     public record RegisterDto
     {
         public string UserName { get; set; }

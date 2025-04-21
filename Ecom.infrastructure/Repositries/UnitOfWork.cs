@@ -22,6 +22,7 @@ namespace Ecom.infrastructure.Repositries
         private readonly UserManager<AppUser> userManager;
         private readonly IEmailService emailService;
         private readonly SignInManager<AppUser> signInManager;
+        private readonly IGenerateToken token;
 
         public ICategoryRepositry CategoryRepositry { get; }
 
@@ -33,7 +34,7 @@ namespace Ecom.infrastructure.Repositries
 
         public IAuth Auth { get; }
 
-        public UnitOfWork(AppDbContext context, IMapper mapper, IImageManagementService imageManagementService, IConnectionMultiplexer redis, UserManager<AppUser> userManager, IEmailService emailService, SignInManager<AppUser> signInManager)
+        public UnitOfWork(AppDbContext context, IMapper mapper, IImageManagementService imageManagementService, IConnectionMultiplexer redis, UserManager<AppUser> userManager, IEmailService emailService, SignInManager<AppUser> signInManager, IGenerateToken token)
         {
             _context = context;
             this.mapper = mapper;
@@ -42,11 +43,13 @@ namespace Ecom.infrastructure.Repositries
             this.userManager = userManager;
             this.emailService = emailService;
             this.signInManager = signInManager;
+            this.token = token;
+
             CategoryRepositry = new CategoryRepositry(_context);
             PhotoRepositry = new PhotoRepositry(_context);
             ProductRepositry = new ProductRepositry(_context, mapper, imageManagementService);
             CustomerBasketRepositry = new CustomerBasketRepositry(redis);
-            Auth = new AuthRepositry(userManager, emailService, signInManager);
+            Auth = new AuthRepositry(userManager, emailService, signInManager,token);
             
         }
     }
