@@ -2,11 +2,8 @@
 using Ecom.Core.Services;
 using Microsoft.Extensions.Configuration;
 using MimeKit;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net.Mail;
+
 
 namespace Ecom.infrastructure.Repositries.Service
 {
@@ -17,29 +14,32 @@ namespace Ecom.infrastructure.Repositries.Service
         {
             this.configuration = configuration;
         }
-        public async Task SendEmail(EmailDto emailDto)
+        public async Task SendEmail(EmailDto emailDTO)
         {
-            MimeMessage mimeMessage = new MimeMessage();
-            mimeMessage.From.Add(new MailboxAddress("My Ecom", configuration["EmailSetting:From"]));
-            mimeMessage.Subject = emailDto.Subject;
-            mimeMessage.To.Add(new MailboxAddress(emailDto.To,emailDto.To));
-            mimeMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+            MimeMessage message = new();
+
+            message.From.Add(new MailboxAddress("My Ecom", configuration["EmailSetting:From"]));
+            message.Subject = emailDTO.Subject;
+            message.To.Add(new MailboxAddress(emailDTO.To, emailDTO.To));
+            message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
             {
-                Text = emailDto.Content
+                Text = emailDTO.Content
             };
-            using(var smtp = new MailKit.Net.Smtp.SmtpClient())
+            using (var smtp = new MailKit.Net.Smtp.SmtpClient())
             {
                 try
                 {
                     await smtp.ConnectAsync(
                         configuration["EmailSetting:Smtp"],
-                        int.Parse(configuration["EmailSetting:Port"]), true);
+                       int.Parse(configuration["EmailSetting:Port"]), true);
                     await smtp.AuthenticateAsync(configuration["EmailSetting:Username"],
                         configuration["EmailSetting:Password"]);
-                    await smtp.SendAsync(mimeMessage);
+
+                    await smtp.SendAsync(message);
                 }
-                catch (Exception ex) 
+                catch (Exception ex)
                 {
+
                     throw;
                 }
                 finally

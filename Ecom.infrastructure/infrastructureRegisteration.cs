@@ -1,4 +1,5 @@
-﻿using Ecom.Core.interfaces;
+﻿using Ecom.Core.Entites;
+using Ecom.Core.interfaces;
 using Ecom.Core.Services;
 using Ecom.infrastructure.Data;
 using Ecom.infrastructure.Repositries;
@@ -6,12 +7,12 @@ using Ecom.infrastructure.Repositries.Service;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
-using Org.BouncyCastle.Pqc.Crypto.Crystals.Dilithium;
 using StackExchange.Redis;
 using System.Text;
 
@@ -45,39 +46,47 @@ namespace Ecom.infrastructure
             {
              op.UseSqlServer(configuretion.GetConnectionString("Ecom"));
 
-        });
+           });
 
-            services.AddAuthentication(op =>
+            services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
+
+
+            services.AddAuthentication(x =>
             {
-                op.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme; 
-                op.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                op.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            }).AddCookie(o =>
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+            .AddCookie(x =>
             {
-                o.Cookie.Name = "token";
-                o.Events.OnRedirectToLogout = context =>
+                x.Cookie.Name = "token";
+                x.Events.OnRedirectToLogin = context =>
                 {
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     return Task.CompletedTask;
                 };
-            }).AddJwtBearer( op =>
+            })
+            .AddJwtBearer(x =>
             {
-                op.RequireHttpsMetadata = false;
-                op.SaveToken = true;
-                op.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
+
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuretion["Token:Secret"])),
                     ValidateIssuer = true,
-                    ValidIssuer = configuretion["Token:Issure"],
-                    ValidateAudience=false,
-                    ClockSkew = TimeSpan.Zero,
+                    ValidIssuer = configuretion["Token:Issuer"],
+                    ValidateAudience = false,
+                    ClockSkew = TimeSpan.Zero
                 };
-                op.Events = new JwtBearerEvents()
+                x.Events = new JwtBearerEvents
                 {
+
                     OnMessageReceived = context =>
                     {
-                        context.Token = context.Request.Cookies["token"];
+                        var token = context.Request.Cookies["token"];
+                        context.Token = token;
                         return Task.CompletedTask;
                     }
                 };

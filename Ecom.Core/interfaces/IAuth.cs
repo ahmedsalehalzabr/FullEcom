@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ecom.Core.Dto;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,11 @@ namespace Ecom.Core.interfaces
 {
     public interface IAuth
     {
+        Task<string> RegisterAsync(RegisterDto registerDto);
+        Task<string> LoginAsync(LoginDto login);
+        Task<bool> SendEmailForForgetPassword(string email);
+        Task<string> ResetPassword(RestPasswordDto restPassword);
+        Task<bool> ActiveAccount(ActiveAccountDto accountDto);
+
     }
 }

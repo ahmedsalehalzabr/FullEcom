@@ -14,7 +14,7 @@ namespace Ecom.Core.Dto
     public record RegisterDto : LoginDto
     {
         public string UserName { get; set; }
-        
+        public string DisplayName { get; set; }
     }
     public record RestPasswordDto : LoginDto
     {

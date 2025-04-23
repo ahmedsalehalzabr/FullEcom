@@ -1,43 +1,64 @@
+using Ecom.infrastructure; // Ensure this namespace is correct
 using Ecom.Api.Middleware;
-using Ecom.infrastructure;
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddMemoryCache();
-builder.Services.AddCors(op =>
+namespace Ecom.API
 {
-    op.AddPolicy("CORSPolicy", builder =>
+    public class Program
     {
-        builder.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:4200");
-    });
-});
+        public static void Main(string[] args)
+        {
+            var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+            // Add services to the container.
+            builder.Services.infrastructureConfiguration(builder.Configuration);
+            builder.Services.AddMemoryCache();
+            builder.Services.AddControllers();
 
-builder.Services.infrastructureConfiguration(builder.Configuration);
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            // Swagger setup
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-var app = builder.Build();
+            // CORS configuration
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("CORSPolicy",
+                builder =>
+                {
+                    builder.WithOrigins("http://localhost:4200", "https://localhost:4200")
+                           .AllowAnyHeader()
+                           .AllowAnyMethod()
+                           .AllowCredentials();
+                });
+            });
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+
+
+            var app = builder.Build();
+
+
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
+
+            app.UseHttpsRedirection();
+            app.UseRouting();
+
+            // Enable CORS
+            app.UseCors("CORSPolicy");
+
+            // Enable authentication and authorization
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            // Custom exception handling middleware
+            app.UseMiddleware<ExceptionsMiddleware>();
+
+            app.UseStaticFiles();
+            app.MapControllers();
+
+            app.Run();
+        }
+    }
 }
-app.UseCors("CORSPolicy");
-app.UseMiddleware<ExceptionsMiddleware>();
-app.UseStaticFiles();
-
-app.UseStatusCodePagesWithReExecute("/errors/{0}");
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
