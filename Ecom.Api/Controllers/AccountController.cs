@@ -48,11 +48,29 @@ namespace Ecom.Api.Controllers
             var result = await work.Auth.ActiveAccount(accountDto);
             return result ? Ok(new ResponseAPI(200)) : BadRequest(new ResponseAPI(200));
         }
-        [HttpPost("send-email-forget-password")]
+
+
+        [HttpGet("send-email-forget-password")]
         public async Task<IActionResult> forget(string email)
         {
             var result = await work.Auth.SendEmailForForgetPassword(email);
             return result ? Ok(new ResponseAPI(200)) : BadRequest(new ResponseAPI(200));
+        }
+
+
+
+
+
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> reset(RestPasswordDto restPasswordDTO)
+        {
+            var result = await work.Auth.ResetPassword(restPasswordDTO);
+            if (result == "done")
+            {
+                return Ok(new ResponseAPI(200));
+            }
+            return BadRequest(new ResponseAPI(400));
         }
     }
 }

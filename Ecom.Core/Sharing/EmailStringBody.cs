@@ -19,7 +19,7 @@ namespace Ecom.Core.Sharing
                        <h>{messge}</h>
                           <hr>
                           <br>
-                         <a href=""http://localhost:4200/Account/component?email={email}&code={encodeToken}"">{messge}</a>
+                         <a href=""http://localhost:4200/Account/{component}?email={email}&code={encodeToken}"">{messge}</a>
                     </body>
                  </html>
                  ";
