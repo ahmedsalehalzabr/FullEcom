@@ -28,6 +28,9 @@ namespace Ecom.infrastructure
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             //register email sender
             services.AddScoped<IEmailService, EmailService>();
+            //register IOrder Service
+            services.AddScoped<IOrderService, OrderService>();
+
             //register token
             services.AddScoped<IGenerateToken,GenerateToken>();
             //apply Redis Connection
