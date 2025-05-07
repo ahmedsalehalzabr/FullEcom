@@ -1,4 +1,5 @@
 ﻿using Ecom.Core.Dto;
+using Ecom.Core.Entites;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace Ecom.Core.interfaces
         Task<bool> SendEmailForForgetPassword(string email);
         Task<string> ResetPassword(RestPasswordDto restPassword);
         Task<bool> ActiveAccount(ActiveAccountDto accountDto);
-
+        Task<bool> UpdateAddress(string email, Address address);
+        
     }
 }

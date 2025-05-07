@@ -2,8 +2,9 @@
 using Ecom.Api.Helper;
 using Ecom.Core.Dto;
 using Ecom.Core.interfaces;
-using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
+using Ecom.Core.Entites;
 
 namespace Ecom.Api.Controllers
 {
@@ -12,6 +13,16 @@ namespace Ecom.Api.Controllers
         public AccountController(IUnitOfWork work, IMapper mapper) : base(work, mapper)
         {
         }
+
+        [HttpPut("update-address")]
+        public async Task<IActionResult> updateAddress(ShipAddressDto shipAddressDto)
+        {
+            var email = User.FindFirst(ClaimTypes.Email)?.Value;
+            var address = mapper.Map<Address>(shipAddressDto);
+            var result = await work.Auth.UpdateAddress(email, address);
+            return result ? Ok() : BadRequest();
+        }
+
         [HttpPost("Register")]
         public async Task<IActionResult> register(RegisterDto registerDto)
         {
