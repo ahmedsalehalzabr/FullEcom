@@ -49,7 +49,7 @@ namespace Ecom.infrastructure.Repositries
             PhotoRepositry = new PhotoRepositry(_context);
             ProductRepositry = new ProductRepositry(_context, mapper, imageManagementService);
             CustomerBasketRepositry = new CustomerBasketRepositry(redis);
-            Auth = new AuthRepositry(userManager, emailService, signInManager,token);
+            Auth = new AuthRepositry(userManager, emailService, signInManager,token, context);
             
         }
     }

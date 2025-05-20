@@ -18,10 +18,15 @@ namespace Ecom.Api.Controllers
         public async Task<IActionResult> updateAddress(ShipAddressDto shipAddressDto)
         {
             var email = User.FindFirst(ClaimTypes.Email)?.Value;
+
+            if (string.IsNullOrEmpty(email))
+                return Unauthorized("User email not found in claims.");
+
             var address = mapper.Map<Address>(shipAddressDto);
             var result = await work.Auth.UpdateAddress(email, address);
             return result ? Ok() : BadRequest();
         }
+
 
         [HttpPost("Register")]
         public async Task<IActionResult> register(RegisterDto registerDto)
