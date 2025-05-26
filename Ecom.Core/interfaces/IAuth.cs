@@ -16,6 +16,7 @@ namespace Ecom.Core.interfaces
         Task<string> ResetPassword(RestPasswordDto restPassword);
         Task<bool> ActiveAccount(ActiveAccountDto accountDto);
         Task<bool> UpdateAddress(string email, Address address);
+        Task<Address> GetUserAddress(string email);
         
     }
 }

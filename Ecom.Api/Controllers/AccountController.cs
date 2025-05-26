@@ -5,6 +5,7 @@ using Ecom.Core.interfaces;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Ecom.Core.Entites;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ecom.Api.Controllers
 {
@@ -14,6 +15,50 @@ namespace Ecom.Api.Controllers
         {
         }
 
+        //[HttpGet("get-address-for-user")]
+        //public async Task<IActionResult> getAddress()
+        //{
+        //    var address = await work.Auth.GetUserAddress(User.FindFirst(ClaimTypes.Email).Value);
+        //    var result = mapper.Map<ShipAddressDto>(address);
+        //    return Ok(result);
+        //}
+
+        [Authorize] // تأكد من وجود هذا
+        [HttpGet("get-address-for-user")]
+        public async Task<IActionResult> getAddress()
+        {
+            // تحقق من وجود claims
+            var emailClaim = User?.FindFirst(ClaimTypes.Email);
+            if (emailClaim == null)
+            {
+                return Unauthorized("User does not have an email claim.");
+            }
+
+            // تحقق من أن Work و Auth ليست null
+            if (work == null || work.Auth == null)
+            {
+                return StatusCode(500, "Internal server error: Service dependencies are not available.");
+            }
+
+            // جلب العنوان
+            var address = await work.Auth.GetUserAddress(emailClaim.Value);
+            if (address == null)
+            {
+                return NotFound("User address not found.");
+            }
+
+            var result = mapper.Map<ShipAddressDto>(address);
+            return Ok(result);
+        }
+
+
+
+        [HttpGet("IsUserAuth")]
+        public async Task<IActionResult> IsUserAuth()
+        {
+            return User.Identity.IsAuthenticated ? Ok() : BadRequest();
+        }
+        [Authorize]
         [HttpPut("update-address")]
         public async Task<IActionResult> updateAddress(ShipAddressDto shipAddressDto)
         {

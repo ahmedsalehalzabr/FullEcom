@@ -186,5 +186,12 @@ namespace Ecom.infrastructure.Repositries
 
             return address;
         }
+
+        public async Task<Address> GetUserAddress(string email)
+        {
+            var User = await userManager.FindByEmailAsync(email);
+            var address = await context.Addresses.FirstOrDefaultAsync(m => m.AppUserId == User.Id);
+            return address;
+        }
     }
 }
